@@ -26,10 +26,8 @@ public class filterAction {
 	public static String score() throws IOException {
 		//File input = new File("C:/Users/yang/Desktop/score.html");
 		//Document doc = Jsoup.parse(input , "GBK"); 
-		String myurl = "http://1.lab2lib.sinaapp.com/score.jsp";
-		System.out.println("score2");
-		Document doc = (Document) Jsoup.connect(myurl).get();
-		System.out.println("score1");
+		String myurl = "http://1.lab2lib.sinaapp.com/score.jsp"; 
+		Document doc = (Document) Jsoup.connect(myurl).get(); 
 		boolean flag = false;
 		String[] d = new String[10];
 		int i;
