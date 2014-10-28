@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+<include file="struts-default.xml" />
+	<constant name="struts.locale" value="zh_CN"/>
+	<constant name="struts.i18n.encoding" value="GBK"/>
+ <package name="default" namespace="" extends="struts-default">
+    <default-action-ref name="error"></default-action-ref>
+    <global-results>
+      <result name="error">/error.jsp</result>
+    </global-results>
+    <global-exception-mappings>
+      <exception-mapping result="error" exception="java.lang.Exception"></exception-mapping>
+    </global-exception-mappings>  
+  </package>
+  
+  <package name="login" extends="default" namespace="/login">
+    <action name="login" class="com.action.UserAction" method="execute">
+      <result name="success">/login/query.jsp </result>
+      <result name="failure">/login/login_failure.jsp</result>
+    </action>
+   </package>
+   <package name="users" extends="default" namespace="/users">
+    <action name="query" class="com.action.ReadAction" method="readScore">
+    	<result name="query_success">/users/reportCard.jsp</result>
+    	<result name="erro">erro.jsp</result>
+    </action>
+  </package>
+</struts>    
