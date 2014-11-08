@@ -5,7 +5,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-public class Main {
+public class filter {
 	
 	public static void taoBao(Document doc) {
 		String[][] tmp = new String[100][30];
