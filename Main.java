@@ -141,6 +141,102 @@ public class Main {
 		}
 	}
 	
+	public static void yitaowang(Document doc) {
+		for(Element ele : doc.select("table").select("tr")){
+			for(Element ele2 : ele.select("td")){
+				if(!ele2.select("td").get(0).toString().equals("")){
+					String text = ele2.select("td").text();
+					System.out.print(text+"\t");
+				}
+			}
+			System.out.println("");
+		}
+	}
+	
+	public static void jingdong(Document doc) {
+		for(Element ele : doc.select("table").select("tr")){
+			for(Element ele2 : ele.select("td")){
+				if(!ele2.select("td").toString().equals("")){
+					String text = ele2.select("td").get(0).text();
+					System.out.print(text+"\t");
+				}
+			}
+			System.out.println("");
+		}
+	}
+	
+	public static void toefl(Document doc) {
+		for(Element ele : doc.select("table").select("tr")){
+			for(Element ele2 : ele.select("td")){
+				if(!ele2.select("td").get(0).toString().equals("")){
+					String text = ele2.select("td").text();
+					System.out.print(text+"\t");
+				}
+			}
+			System.out.println("");
+		}
+	}
+	
+	public static void rank_985(Document doc) {
+		for(Element ele : doc.select("table").select("tr")){
+			for(Element ele2 : ele.select("td")){
+				if(!ele2.select("td").get(0).toString().equals("")){
+					String text = ele2.select("td").text();
+					System.out.print(text+"\t");
+				}
+			}
+			System.out.println("");
+		}
+	}
+	
+	public static void acm(Document doc) {
+		for(Element ele : doc.select("table").select("tr")){
+			for(Element ele2 : ele.select("td")){
+				if(!ele2.select("td").get(0).toString().equals("")){
+					String text = ele2.select("td").text();
+					System.out.print(text+"\t");
+				}
+			}
+			System.out.println("");
+		}
+	}
+	
+	public static void pingjiao(Document doc) {
+		for(Element ele : doc.select("table").select("tr")){
+			for(Element ele2 : ele.select("td")){
+				if(!ele2.select("td").get(0).toString().equals("")){
+					String text = ele2.select("td").text();
+					System.out.print(text+"\t");
+				}
+			}
+			System.out.println("");
+		}
+	}
+	
+	public static void xuanke(Document doc) {
+		for(Element ele : doc.select("table").select("tr")){
+			for(Element ele2 : ele.select("td")){
+				if(!ele2.select("td").get(0).toString().equals("")){
+					String text = ele2.select("td").text();
+					System.out.print(text+"\t");
+				}
+			}
+			System.out.println("");
+		}
+	}
+	
+	public static void guanliyuan(Document doc) {
+		for(Element ele : doc.select("table").select("tr")){
+			for(Element ele2 : ele.select("td")){
+				if(!ele2.select("td").get(0).toString().equals("")){
+					String text = ele2.select("td").text();
+					System.out.print(text+"\t");
+				}
+			}
+			System.out.println("");
+		}
+	}
+	
 	public static void getChart(String mode, String url) throws IOException, SQLException {
 		File input = new File(url);
 		Document doc = Jsoup.parse(input, "GBK");
@@ -151,13 +247,44 @@ public class Main {
 		case "教务处":
 			jwc(doc);
 		    break;
+		case "一淘网":
+			yitaowang(doc);
+		    break;
+		case "京东":
+			jingdong(doc);
+		    break;
+		case "985":
+			rank_985(doc);
+		    break;
+		case "托福":
+			toefl(doc);
+		    break;
+		case "ACM":
+			acm(doc);
+		    break;
+		case "评教":
+			pingjiao(doc);
+		    break;
+		case "选课":
+			xuanke(doc);
+		    break;
+		case "管理员":
+			guanliyuan(doc);
+		    break;
 		default:
 			break;
 		}
 	}
 
 	public static void main(String[] args) throws IOException, SQLException {
-		getChart("淘宝", "C:\\Users\\yang\\Desktop\\淘宝.html");
+		//getChart("淘宝", "C:\\Users\\yang\\Desktop\\淘宝.html");
+		getChart("一淘网", "C:\\Users\\yang\\Desktop\\一淘网.html");
+		getChart("京东", "C:\\Users\\yang\\Desktop\\京东.html");
+		getChart("选课", "C:\\Users\\yang\\Desktop\\选课.html");
+		getChart("评教", "C:\\Users\\yang\\Desktop\\评教.html");
+		getChart("985", "C:\\Users\\yang\\Desktop\\985.html");
+		getChart("管理员", "C:\\Users\\yang\\Desktop\\管理员.html");
+		getChart("ACM", "C:\\Users\\yang\\Desktop\\ACM.html");
+		getChart("托福", "C:\\Users\\yang\\Desktop\\托福.html");
 	}
-	
 }
