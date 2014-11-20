@@ -1,7 +1,0 @@
-INDEX VERSION 1.126
-E:\JavaPath\webParser\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\1106152511.index
-\webParser\1120310523-lab1-code\1120310523-lab1-code\src
-E:\JavaPath\webParser\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\1512588907.index
-\webParser\1120310523-lab1-code\1120310523-lab1-code\src
-E:\JavaPath\webParser\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\655048564.index
-\webParser\1120310523-lab1-code\1120310523-lab1-code\src
