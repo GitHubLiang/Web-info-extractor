@@ -201,15 +201,49 @@ public class Main {
 		}
 	}
 	
-	public static void pingjiao(Document doc) {
+	public static void pingjiao(Document doc) throws SQLException {
+		int find = 0;
+		String[][] tmp = new String[100][30];
+		int x = 0,y = 0;
+		String text;
+		int flag = 0;
+		int rowNum = 0;
 		for(Element ele : doc.select("table").select("tr")){
 			for(Element ele2 : ele.select("td")){
 				if(!ele2.select("td").get(0).toString().equals("")){
-					String text = ele2.select("td").text();
-					System.out.print(text+"\t");
+					text = ele2.select("td").text();
+					//System.out.print(text+"\t");
+					if(text.equals("教师姓名")){
+						find++;
+					}
+					if(find==2){
+						tmp[x][y++] = text;
+						flag++;
+					}
 				}
 			}
-			System.out.println("");
+			//System.out.println("");
+			if(flag==4) {
+				x++;
+				y = 0;
+				flag = 0;
+				rowNum++;
+			}
+		}
+		for(int i = 0;i<rowNum;i++){
+			for(int j = 0;j<4;j++){
+				System.out.print(tmp[i][j]+"\t");
+			}
+			System.out.println();
+		}
+
+		Connection conn = Dao.getConnection();
+		Statement stmt = conn.createStatement();
+		String sql;
+		
+		for(int xx = 0;xx<rowNum;xx++) {
+			sql = "insert into 评教  values('"+tmp[xx][0]+"','"+tmp[xx][1]+"','"+tmp[xx][2]+"','"+tmp[xx][3]+"')";
+			stmt.executeUpdate(sql);
 		}
 	}
 	
@@ -278,13 +312,13 @@ public class Main {
 
 	public static void main(String[] args) throws IOException, SQLException {
 		//getChart("淘宝", "C:\\Users\\yang\\Desktop\\淘宝.html");
-		getChart("一淘网", "C:\\Users\\yang\\Desktop\\一淘网.html");
-		getChart("京东", "C:\\Users\\yang\\Desktop\\京东.html");
-		getChart("选课", "C:\\Users\\yang\\Desktop\\选课.html");
+		//getChart("一淘网", "C:\\Users\\yang\\Desktop\\一淘网.html");
+		//getChart("京东", "C:\\Users\\yang\\Desktop\\京东.html");
+		//getChart("选课", "C:\\Users\\yang\\Desktop\\选课.html");
 		getChart("评教", "C:\\Users\\yang\\Desktop\\评教.html");
-		getChart("985", "C:\\Users\\yang\\Desktop\\985.html");
-		getChart("管理员", "C:\\Users\\yang\\Desktop\\管理员.html");
-		getChart("ACM", "C:\\Users\\yang\\Desktop\\ACM.html");
-		getChart("托福", "C:\\Users\\yang\\Desktop\\托福.html");
+		//getChart("985", "C:\\Users\\yang\\Desktop\\985.html");
+		//getChart("管理员", "C:\\Users\\yang\\Desktop\\管理员.html");
+		//getChart("ACM", "C:\\Users\\yang\\Desktop\\ACM.html");
+		//getChart("托福", "C:\\Users\\yang\\Desktop\\托福.html");
 	}
 }
