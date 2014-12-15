@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedList;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -19,6 +20,7 @@ class Extractor {
 	private Connection conn;
 	private Statement stmt;
 	private String sql;
+	private LinkedList<TableHead> tableHeads;
 	
 	public Extractor(String url) throws IOException, SQLException {
 		file = new File(url);
@@ -27,10 +29,12 @@ class Extractor {
 		tableCount = colCount = 0;
 		conn = Dao.getConnection();
 		stmt = conn.createStatement();
+		tableHeads = new LinkedList<TableHead>();
 	}
 	private void create(String[] cols) throws SQLException {
 		tableName = tableName.replaceAll(" ", "_");
 		sql = "create table "+tableName+(++tableCount)+"(";
+		String name = tableName+tableCount;
 		for(int i=0;i<n;i++) {
 			if((cols[i].length()==1&&(int)cols[i].charAt(0)==160)||cols[i].length()==0) cols[i] = "null"+ (++colCount);
 			cols[i] = cols[i].replaceAll(" ", "_");
@@ -40,9 +44,13 @@ class Extractor {
 				sql += ", ";
 			}
 		}
+		tableHeads.add(new TableHead(name,cols,n));
 		sql += ")";
 		System.out.println(sql);
 		stmt.execute(sql);
+	}
+	public LinkedList<TableHead> getTable() {
+		return tableHeads;
 	}
 	private void insert(String[] cols) throws SQLException {
 		sql = "insert into "+tableName+tableCount+" values(";
@@ -65,12 +73,13 @@ class Extractor {
 		if(a<b) return b;
 		return a;
 	}
-	private void put(String s) {
+	public void put(String s) {
 		System.out.println(s);
 	}
-	private void put(int i) {
+	public void put(int i) {
 		System.out.println(i);
 	}
+	
 	public void extract() throws SQLException {
 		int row = -1;
 		int[] col = new int[3];
@@ -78,23 +87,23 @@ class Extractor {
 		for(Element ele : doc.select("table")) {
 			row = -1;
 			col[0] = col[1] = col[2] = 0;
-			put("Find a table!");
+			//put("Find a table!");
 			boolean detectedTable = false;
 			for(Element ele2 : ele.select("tr")) {
 				if(!detectedTable){
 					row++;
 					if(row > 2) break;
-					put("row "+row);
+					//put("row "+row);
 					int j = 0;
 					for(Element e : ele2.select("th")) {
-						put("text "+e.select("th").text());
+						//put("text "+e.select("th").text());
 						col[row]++;
 						if(j > 49) break;
 						tmp[row][j++] = e.select("th").text();
 					}
 					if(j > 49) break;
 					for(Element e : ele2.select("td")) {
-						put("text "+e.select("td").text());
+						//put("text "+e.select("td").text());
 						col[row]++;
 						if(j > 49) break;
 						tmp[row][j++] = e.select("td").text();
@@ -125,6 +134,20 @@ class Extractor {
 		}
 	}
 }
+class TableHead { // 可以向结构体一样直接引用成员
+	public String tableName;
+	public String[] columns;
+	public int columnLen;
+	
+	public TableHead(String name, String[] cols, int n) {
+		tableName = name;
+		columnLen = n;
+		columns = new String[n];
+		for(int i=0;i<n;i++) {
+			columns[i] = cols[i];
+		}
+	}	
+}
 public class Main {	
 	
 	public static void main(String[] args) throws IOException, SQLException {
@@ -139,5 +162,15 @@ public class Main {
 		//Extractor e = new Extractor("F:\\SE\\labs\\lab5\\src\\ACM.html");
 		Extractor e = new Extractor("F:\\SE\\labs\\lab5\\src\\HTML 参考手册.htm");
         e.extract();
+        LinkedList<TableHead> tableHeads = e.getTable();
+        System.out.println(tableHeads.size());//返回有几个表
+        for(TableHead t : tableHeads) {
+        	System.out.println(t.tableName);
+        	System.out.println(t.columnLen);
+        	for(int i=0;i<t.columnLen;i++) {
+        		System.out.println(t.columns[i]);
+        	}
+        }
+        
 	}
 }
