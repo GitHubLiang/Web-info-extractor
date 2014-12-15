@@ -11,314 +11,133 @@ import java.sql.Statement;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-
-public class Main {
-	public static void taoBao(Document doc) throws SQLException {
-		String[][] tmp = new String[100][30];
-		int x = 0,y = 0;
-		for(Element ele : doc.select("table").select("tr")){
-			boolean flag = false;
-			for(Element ele2 : ele.select("td")){
-				if(!ele2.select("td").toString().equals("")){
-					//String url = ele.select("td").get(0).select("a").attr("href");
-					String text = ele2.select("td").get(0).text();
-					
-					//String count = ele.select("td").get(0).select("span").text();
-					if(text.equals("È«Ñ¡ ºÏ²¢¸¶¿î ºÏ²¢´ú¸¶ ÅúÁ¿È·ÈÏÊÕ»õ ÈçÏëÊ¹ÓÃÐÅÓÃ¿¨¸¶¿î£¬ÇëÖ»Ñ¡Ôñ´øÓÐ ±êÊ¶µÄ±¦±´ ÏÂÒ»Ò³") || text.equals("È«Ñ¡ ºÏ²¢¸¶¿î ºÏ²¢´ú¸¶ ÅúÁ¿È·ÈÏÊÕ»õ 1 2 3 4 5 ... ¹² 15 Ò³£¬ µ½µÚ Ò³ È·¶¨")) {
-						flag = true;
-						break;
-					} else if(text.equals("·ÖÏí ±ê¼Ç É¾³ý") || text.equals("·ÖÏí ×ªÂô ±ê¼Ç É¾³ý") || text.equals("²é¿´µêÆÌ»î¶¯ ·ÖÏí ×ªÂô ±ê¼Ç É¾³ý")) {
-						continue;
-					}
-					if(text.equals("Í¶ËßÂô¼Ò") || text.equals("ÉêÇëÊÛºó") || text.equals("ÉêÇëÊÛºó Í¶ËßÂô¼Ò") || text.equals("ÉêÇëÊÛºó Í¶ËßÂô¼Ò ÔË·ÑÏÕÊ§Ð§") || text.equals("µçÆ÷³Ç·þÎñÌ¨ ÉêÇëÊÛºó") || text.equals("µçÆ÷³Ç·þÎñÌ¨ ÉêÇëÊÛºó Í¶ËßÂô¼Ò")) {
-						continue;
-					}
-					if(text.equals("½»Ò×¹Ø±Õ ¶©µ¥ÏêÇé") || text.equals("½»Ò×³É¹¦ ¶©µ¥ÏêÇé") || text.equals("½»Ò×³É¹¦ ¶©µ¥ÏêÇé Ë«·½ÒÑÆÀ") || text.equals("½»Ò×³É¹¦ ¶©µ¥ÏêÇé ²é¿´ÎïÁ÷ Ë«·½ÒÑÆÀ")) {
-						continue;
-					}
-					if(text.equals("×·¼ÓÆÀÂÛ ÔÙ´Î¹ºÂò") || text.equals("×·¼ÓÆÀÂÛ") || text.equals("ÔÙ´Î¹ºÂò")) {
-						continue;
-					}
-					if(text.equals("µçÆ÷³Ç·þÎñÌ¨")) {
-						continue;
-					}
-					if(text.equals("±£ÏÕ·þÎñ")) {
-						continue;
-					}
-					if(text.length() > 0) {
-						tmp[x][y++] = text;
-						flag = true;
-					}
-				}
-			}
-			if(!flag) {
-				x++;
-				y = 0;
-			}
-		}
-		String[][] t = new String[100][30];
-		x = y = 0;
-		for (int i=0; i<20; i++) {
-			if (tmp[i][0] == null) continue;
-			if (tmp[i][8] == null) { // one good
-				for (int j=0; j<6; j++) {
-					if (j == 0) {
-						t[x][y++] = tmp[i][j].substring(0, 10);
-						t[x][y++] = tmp[i][j].substring(10);
-					}
-					else
-						t[x][y++] = tmp[i][j];
-				}
-				x++;
-				y = 0;
-				
-			} else {// more than one goods
-				t[x][y++] = tmp[i][0].substring(0, 10);
-				t[x][y++] = tmp[i][0].substring(10);
-				t[x][y++] = tmp[i][1];
-				t[x][y++] = "|                            ±¦±´Ãû                                                                              |";
-				t[x][y++] = "|      µ¥¼Û               |";
-				t[x][y++] = "|      ÊýÁ¿               |";
-				t[x++][y++] = tmp[i][5];
-				y = 0;
-				t[x][y++] = "    -     ";
-				t[x][y++] = "         -         ";
-				t[x][y++] = "    -     ";
-				t[x][y++] = tmp[i][2];
-				t[x][y++] = tmp[i][3];
-				t[x][y++] = tmp[i][4];
-				t[x++][y++] = "    -     ";
-				y = 0;
-				for (int j=0; tmp[i][6+j*3]!=null; j++) {
-					t[x][y++] = "    -     ";
-					t[x][y++] = "         -         ";
-					t[x][y++] = "    -     ";
-					t[x][y++] = tmp[i][6+j*3];
-					t[x][y++] = tmp[i][6+j*3+1];
-					t[x][y++] = tmp[i][6+j*3+2];
-					t[x++][y++] = "    -     ";
-					y = 0;
-				}
-			}
-		}
-		
-		Connection conn = Dao.getConnection();
-		Statement stmt = conn.createStatement();
-		String sql;
-		
-		for(int xx = 0;xx<25;xx++) {
-			sql = "insert into ÌÔ±¦  values('"+t[xx][0]+"','"+t[xx][1]+"','"+t[xx][2]+"','"+t[xx][3]+"','"+t[xx][4]+"','"+t[xx][5]+"')";
-			stmt.executeUpdate(sql);
-		}
-		
-		sql = "select * from ÌÔ±¦";
-		ResultSet rs = stmt.executeQuery(sql);
-		
-		while(rs.next()) {
-			for(int yy = 1;yy<=6;yy++) {
-				//if (tmp[xx][yy]!=null && tmp[xx][yy].length()>4)
-				if (yy == 2) {
-					if (rs.getString(yy).length() < 6) {
-						System.out.printf(rs.getString(yy)+"\t\t");
-					} else
-						System.out.printf(rs.getString(yy)+"\t");
-				} else
-					System.out.printf(rs.getString(yy)+"\t\t");
-			}
-			System.out.println("");
-		}
-	}
+class Extractor {
+	private File file;
+	private Document doc;
+	private String tableName;
+	private int tableCount, n, colCount;
+	private Connection conn;
+	private Statement stmt;
+	private String sql;
 	
-	public static void jwc(Document doc) {
-		for(Element ele : doc.select("table").select("tr")){
-			for(Element ele2 : ele.select("td")){
-				if(!ele2.select("td").toString().equals("")){
-					String text = ele2.select("td").get(0).text();
-					System.out.print(text+"\t");
-				}
-			}
-			System.out.println("");
-		}
+	public Extractor(String url) throws IOException, SQLException {
+		file = new File(url);
+		doc = Jsoup.parse(file, "GBK");
+		tableName = url.substring(url.lastIndexOf('\\')+1,url.lastIndexOf('.'));
+		tableCount = colCount = 0;
+		conn = Dao.getConnection();
+		stmt = conn.createStatement();
 	}
-	
-	public static void yitaowang(Document doc) {
-		for(Element ele : doc.select("table").select("tr")){
-			for(Element ele2 : ele.select("td")){
-				if(!ele2.select("td").get(0).toString().equals("")){
-					String text = ele2.select("td").text();
-					System.out.print(text+"\t");
-				}
+	private void create(String[] cols) throws SQLException {
+		tableName = tableName.replaceAll(" ", "_");
+		sql = "create table "+tableName+(++tableCount)+"(";
+		for(int i=0;i<n;i++) {
+			if((cols[i].length()==1&&(int)cols[i].charAt(0)==160)||cols[i].length()==0) cols[i] = "null"+ (++colCount);
+			cols[i] = cols[i].replaceAll(" ", "_");
+			sql += cols[i]+" varchar(255)";
+			//if(tableCount==6&&i==1) put("length "+cols[i].length()+" ascii "+(int)cols[i].charAt(0));
+			if(i<n-1) {
+				sql += ", ";
 			}
-			System.out.println("");
 		}
+		sql += ")";
+		System.out.println(sql);
+		stmt.execute(sql);
 	}
-	
-	public static void jingdong(Document doc) {
-		for(Element ele : doc.select("table").select("tr")){
-			for(Element ele2 : ele.select("td")){
-				if(!ele2.select("td").toString().equals("")){
-					String text = ele2.select("td").get(0).text();
-					System.out.print(text+"\t");
-				}
+	private void insert(String[] cols) throws SQLException {
+		sql = "insert into "+tableName+tableCount+" values(";
+		for(int i=0;i<min(n,cols.length);i++) {
+			cols[i] = cols[i].replaceAll("'", "''");
+			sql += "'" + cols[i] + "'";
+			if(i<n-1) {
+				sql += ", ";
 			}
-			System.out.println("");
 		}
+		sql += ")";
+		System.out.println(sql);
+		stmt.execute(sql);
 	}
-	
-	public static void toefl(Document doc) {
-		for(Element ele : doc.select("table").select("tr")){
-			for(Element ele2 : ele.select("td")){
-				if(!ele2.select("td").get(0).toString().equals("")){
-					String text = ele2.select("td").text();
-					System.out.print(text+"\t");
-				}
-			}
-			System.out.println("");
-		}
+	private int min(int a, int b) {
+		if(a<b) return a;
+		return b;
 	}
-	
-	public static void rank_985(Document doc) {
-		for(Element ele : doc.select("table").select("tr")){
-			for(Element ele2 : ele.select("td")){
-				if(!ele2.select("td").get(0).toString().equals("")){
-					String text = ele2.select("td").text();
-					System.out.print(text+"\t");
-				}
-			}
-			System.out.println("");
-		}
+	private int max(int a, int b) {
+		if(a<b) return b;
+		return a;
 	}
-	
-	public static void acm(Document doc) {
-		for(Element ele : doc.select("table").select("tr")){
-			for(Element ele2 : ele.select("td")){
-				if(!ele2.select("td").get(0).toString().equals("")){
-					String text = ele2.select("td").text();
-					System.out.print(text+"\t");
-				}
-			}
-			System.out.println("");
-		}
+	private void put(String s) {
+		System.out.println(s);
 	}
-	
-	public static void pingjiao(Document doc) throws SQLException {
-		int find = 0;
-		String[][] tmp = new String[100][30];
-		int x = 0,y = 0;
-		String text;
-		int flag = 0;
-		int rowNum = 0;
-		for(Element ele : doc.select("table").select("tr")){
-			for(Element ele2 : ele.select("td")){
-				if(!ele2.select("td").get(0).toString().equals("")){
-					text = ele2.select("td").text();
-					//System.out.print(text+"\t");
-					if(text.equals("½ÌÊ¦ÐÕÃû")){
-						find++;
+	private void put(int i) {
+		System.out.println(i);
+	}
+	public void extract() throws SQLException {
+		int row = -1;
+		int[] col = new int[3];
+		String[][] tmp = new String[3][50];
+		for(Element ele : doc.select("table")) {
+			row = -1;
+			col[0] = col[1] = col[2] = 0;
+			put("Find a table!");
+			boolean detectedTable = false;
+			for(Element ele2 : ele.select("tr")) {
+				if(!detectedTable){
+					row++;
+					if(row > 2) break;
+					put("row "+row);
+					int j = 0;
+					for(Element e : ele2.select("th")) {
+						put("text "+e.select("th").text());
+						col[row]++;
+						if(j > 49) break;
+						tmp[row][j++] = e.select("th").text();
 					}
-					if(find==2){
-						tmp[x][y++] = text;
-						flag++;
+					if(j > 49) break;
+					for(Element e : ele2.select("td")) {
+						put("text "+e.select("td").text());
+						col[row]++;
+						if(j > 49) break;
+						tmp[row][j++] = e.select("td").text();
 					}
+					if(j > 49) break;
+					if(row == 2) {
+						if(min(col[1],col[2])<col[0]-2) break;
+						if(max(col[1],col[2])>col[0]) break;
+						if(min(min(col[0],col[1]),col[2])<2) break;
+						put("col[0] "+col[0]);
+						put("col[1] "+col[1]);
+						put("col[2] "+col[2]);
+						n = col[0];
+						create(tmp[0]);
+						insert(tmp[1]);
+						insert(tmp[2]);
+						detectedTable = true;
+					}
+				} else {
+					int j = 0;
+					for(Element e : ele2.select("td")) {
+						tmp[0][j++] = e.select("td").text();
+					}
+					if(j!=col[2]) continue;
+					insert(tmp[0]);
 				}
 			}
-			//System.out.println("");
-			if(flag==4) {
-				x++;
-				y = 0;
-				flag = 0;
-				rowNum++;
-			}
-		}
-		for(int i = 0;i<rowNum;i++){
-			for(int j = 0;j<4;j++){
-				System.out.print(tmp[i][j]+"\t");
-			}
-			System.out.println();
-		}
-
-		Connection conn = Dao.getConnection();
-		Statement stmt = conn.createStatement();
-		String sql;
-		
-		for(int xx = 0;xx<rowNum;xx++) {
-			sql = "insert into ÆÀ½Ì  values('"+tmp[xx][0]+"','"+tmp[xx][1]+"','"+tmp[xx][2]+"','"+tmp[xx][3]+"')";
-			stmt.executeUpdate(sql);
 		}
 	}
+}
+public class Main {	
 	
-	public static void xuanke(Document doc) {
-		for(Element ele : doc.select("table").select("tr")){
-			for(Element ele2 : ele.select("td")){
-				if(!ele2.select("td").get(0).toString().equals("")){
-					String text = ele2.select("td").text();
-					System.out.print(text+"\t");
-				}
-			}
-			System.out.println("");
-		}
-	}
-	
-	public static void guanliyuan(Document doc) {
-		for(Element ele : doc.select("table").select("tr")){
-			for(Element ele2 : ele.select("td")){
-				if(!ele2.select("td").get(0).toString().equals("")){
-					String text = ele2.select("td").text();
-					System.out.print(text+"\t");
-				}
-			}
-			System.out.println("");
-		}
-	}
-	
-	public static void getChart(String mode, String url) throws IOException, SQLException {
-		File input = new File(url);
-		Document doc = Jsoup.parse(input, "GBK");
-		switch(mode) {
-		case "ÌÔ±¦":
-			taoBao(doc);
-			break;
-		case "½ÌÎñ´¦":
-			jwc(doc);
-		    break;
-		case "Ò»ÌÔÍø":
-			yitaowang(doc);
-		    break;
-		case "¾©¶«":
-			jingdong(doc);
-		    break;
-		case "985":
-			rank_985(doc);
-		    break;
-		case "ÍÐ¸£":
-			toefl(doc);
-		    break;
-		case "ACM":
-			acm(doc);
-		    break;
-		case "ÆÀ½Ì":
-			pingjiao(doc);
-		    break;
-		case "Ñ¡¿Î":
-			xuanke(doc);
-		    break;
-		case "¹ÜÀíÔ±":
-			guanliyuan(doc);
-		    break;
-		default:
-			break;
-		}
-	}
-
 	public static void main(String[] args) throws IOException, SQLException {
-		//getChart("ÌÔ±¦", "C:\\Users\\yang\\Desktop\\ÌÔ±¦.html");
-		//getChart("Ò»ÌÔÍø", "C:\\Users\\yang\\Desktop\\Ò»ÌÔÍø.html");
-		//getChart("¾©¶«", "C:\\Users\\yang\\Desktop\\¾©¶«.html");
-		getChart("Ñ¡¿Î", "C:\\Users\\yang\\Desktop\\Ñ¡¿Î.html");
-		//getChart("ÆÀ½Ì", "C:\\Users\\yang\\Desktop\\ÆÀ½Ì.html");
-		//getChart("985", "C:\\Users\\yang\\Desktop\\985.html");
-		//getChart("¹ÜÀíÔ±", "C:\\Users\\yang\\Desktop\\¹ÜÀíÔ±.html");
-		//getChart("ACM", "C:\\Users\\yang\\Desktop\\ACM.html");
-		//getChart("ÍÐ¸£", "C:\\Users\\yang\\Desktop\\ÍÐ¸£.html");
+		//Extractor e = new Extractor("F:\\SE\\labs\\jwc.htm");//ok
+		//Extractor e = new Extractor("F:\\SE\\labs\\lab5\\src\\rank985.html");
+		//Extractor e = new Extractor("F:\\SE\\labs\\lab5\\src\\å¤§ä¸€å¹´åº¦é¡¹ç›®æŸ¥è¯¢.htm");//fine
+		//Extractor e = new Extractor("F:\\SE\\labs\\lab5\\src\\ä¸Šå­¦æœŸè¯„æ•™ç»“æžœæŸ¥è¯¢.htm");//surprise!
+		//Extractor e = new Extractor("F:\\SE\\labs\\lab5\\src\\ç®¡ç†å‘˜.html");
+		//Extractor e = new Extractor("F:\\SE\\labs\\lab5\\src\\HTML å­—ç¬¦å®žä½“.htm");//get~
+		//Extractor e = new Extractor("F:\\SE\\labs\\lab5\\src\\ç”³è¯·å¤„ç†ç»“æžœæŸ¥è¯¢.htm");
+		//Extractor e = new Extractor("F:\\SE\\labs\\lab5\\src\\æ‰˜ç¦.html");ok
+		//Extractor e = new Extractor("F:\\SE\\labs\\lab5\\src\\ACM.html");
+		Extractor e = new Extractor("F:\\SE\\labs\\lab5\\src\\HTML å‚è€ƒæ‰‹å†Œ.htm");
+        e.extract();
 	}
 }
